@@ -4,6 +4,9 @@
  * and open the template in the editor.
  */
 package sistema.empleadosGUI;
+import java.sql.ResultSet;
+import javax.swing.table.DefaultTableModel;
+import sistema.empleadosBL.empleadosBL;
 import sistema.empleadosDAL.conexion;
 
 /**
@@ -11,12 +14,20 @@ import sistema.empleadosDAL.conexion;
  * @author Eduardo
  */
 public class frmEmpleados extends javax.swing.JFrame {
+    DefaultTableModel modelo;
 
     /**
      * Creates new form frmEmpleados
      */
     public frmEmpleados() {
         initComponents();
+        
+        String[] titulos = {"ID", "Nombre", "Correo"};
+        
+        modelo = new DefaultTableModel(null, titulos);
+        tblEmpleados.setModel(modelo);
+        
+        mostrarDatos();
     }
 
     /**
@@ -156,8 +167,58 @@ public class frmEmpleados extends javax.swing.JFrame {
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
         // TODO add your handling code here:
         conexion objConexion = new conexion();
+        
+        empleadosBL oEmpleados = recuperarDatosGUI();
+        String strSentenciaInsert = String.format("INSERT INTO Empleados (ID, Nombre, Correo) "
+                + "VALUES (null, '%s', '%s')", oEmpleados.getNombre(), oEmpleados.getCorreo());
+        
+        objConexion.ejecutarSentenciaSql(strSentenciaInsert);
+       // objConexion.ejecutarSentenciaSql("INSERT INTO Empleados (ID, Nombre, Correo) VALUES (null, 'eduardo', 'eduardo@gmail.com')");
+       /* try {
+            ResultSet resultado = objConexion.consultarRegistros("SELECT * FROM Empleados");
+            
+            while (resultado.next()) {
+                
+                System.out.println(resultado.getString("ID"));
+                System.out.println(resultado.getString("Nombre"));
+                System.out.println(resultado.getString("Correo"));
+                
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }*/
     }//GEN-LAST:event_btnAgregarActionPerformed
 
+    public void mostrarDatos(){
+        conexion objConexion = new conexion();
+        try {
+            ResultSet resultado = objConexion.consultarRegistros("SELECT * FROM Empleados");
+            
+            while (resultado.next()) {
+                
+                System.out.println(resultado.getString("ID"));
+                System.out.println(resultado.getString("Nombre"));
+                System.out.println(resultado.getString("Correo"));
+                
+                Object[] oUsuario = {resultado.getString("ID"), resultado.getString("Nombre"), resultado.getString("Correo")};
+                modelo.addRow(oUsuario);
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+    
+    public empleadosBL recuperarDatosGUI(){
+        empleadosBL objEmpleado= new  empleadosBL();
+        
+        int ID = (txtID.getText().isEmpty()) ? 0 : Integer.parseInt(txtID.getText());
+        objEmpleado.setID(ID);
+        
+        objEmpleado.setNombre(txtNombre.getText());
+        objEmpleado.setCorreo(txtCorreo.getText());
+        
+        return objEmpleado;
+    }
     /**
      * @param args the command line arguments
      */

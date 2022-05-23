@@ -7,6 +7,9 @@ package sistema.empleadosDAL;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  *
@@ -28,4 +31,32 @@ public class conexion {
             System.out.println("Error de conexion"+e);
         }
     }
+    
+    public boolean ejecutarSentenciaSql(String strSentenciaSql){
+        try {
+            PreparedStatement prepared = con.prepareStatement(strSentenciaSql);
+            prepared.execute();
+            return true;
+        } catch (SQLException e) {
+            System.out.println(e);
+            return false;
+        }
+            
+    }
+    
+    public ResultSet consultarRegistros(String strSentenciaSql){
+        try {
+            
+            PreparedStatement patm = con.prepareStatement(strSentenciaSql);
+            ResultSet respuesta = patm.executeQuery();
+            return respuesta;
+            
+        } catch (Exception e) {
+            
+            System.out.println(e);
+            return null;
+            
+        }
+    }
+    
 }
